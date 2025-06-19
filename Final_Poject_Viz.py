@@ -80,7 +80,7 @@ def dispo_plot(xvals, num_ops, curr_ax, curr_fig):
         for i in range(num_ops):
             ops.loc[len(ops)] = [x, temp.index[i], temp[temp.index[i]]]
     op_colors = {}
-    colors = [plt.cm.get_cmap('viridis')(i) for i in range(len(issues['DispositionedBy'].unique()))]
+    colors = [plt.cm.get_cmap('flag')(i/len(issues['DispositionedBy'].unique())) for i in range(len(issues['DispositionedBy'].unique()))]
     for i, op in enumerate(issues['DispositionedBy'].unique()):
         op_colors[op] = colors[i]
     curr_ax.clear()
@@ -94,6 +94,24 @@ def dispo_plot(xvals, num_ops, curr_ax, curr_fig):
     curr_ax.set_xlabel('Year')
     curr_ax.set_ylabel('Dispositions')
     curr_ax.set_xlim([xvals.min() - 1, xvals.max() + 1])
+
+
+    handles, labels = curr_ax.get_legend_handles_labels()
+    # If there are handles/labels, create/update the legend
+    if handles and labels:
+        sorted_labels_handles = sorted(zip(labels, handles), key=lambda x: x[0])
+        sorted_labels = [label for label, _ in sorted_labels_handles]
+        sorted_handles = [handle for _, handle in sorted_labels_handles]
+        curr_ax.legend(
+            sorted_handles,
+            sorted_labels,
+            title='Dispo\'d By',
+            bbox_to_anchor=(1.05, 1),
+            loc='upper left',
+            borderaxespad=0.,
+            ncol=max(1, (len(issues['DispositionedBy'].unique()) // 20)),  # Adjust columns based on number of products
+            fontsize='x-small'
+        )
     curr_fig.subplots_adjust(bottom=0.25, left=0.25)
     plt.show()
 
